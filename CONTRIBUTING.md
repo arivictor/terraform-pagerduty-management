@@ -28,6 +28,9 @@ Firstly, thank you for considering contributing! It's people like you that make 
 2. **Test Your Changes**: Ensure that your changes do not break any functionality and add new tests if necessary.
 
 3. **Update The Docs**: Use terraform-docs to update the documentation if you have made codebas changes.
+    ```shell
+    terraform-docs -c .terraform-docs-config.yml .
+    ```
 
 4. **Commit Your Changes**: Commit your changes using a descriptive commit message.
    ```shell
