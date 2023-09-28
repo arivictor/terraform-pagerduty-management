@@ -1,10 +1,43 @@
-# terraform-pagerduty-management
-Manage all aspects of your PagerDuty service from a single module
+## Requirements
 
-TODO:
-* [x] teams
-* [x] users
-* [x] user team memberships
-* [x] schedules
-* [] escalation policy
-* [] slack connection
+| Name | Version |
+|------|---------|
+| <a name="requirement_pagerduty"></a> [pagerduty](#requirement\_pagerduty) | >= 3.0.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_pagerduty"></a> [pagerduty](#provider\_pagerduty) | 3.0.1 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [pagerduty_escalation_policy.policy](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/escalation_policy) | resource |
+| [pagerduty_schedule.schedule](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/schedule) | resource |
+| [pagerduty_team.team](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team) | resource |
+| [pagerduty_team_membership.member](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership) | resource |
+| [pagerduty_user.user](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user) | resource |
+| [pagerduty_user_contact_method.user](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user_contact_method) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_escalation_policies"></a> [escalation\_policies](#input\_escalation\_policies) | List of escalation policies. | <pre>map(object({<br>    name      = string<br>    num_loops = number<br>    teams     = list(string)<br>    rules = list(object({<br>      escalation_delay_in_minutes = number<br>      targets = list(object({<br>        type     = string<br>        user_key = string<br>      }))<br>    }))<br>  }))</pre> | `{}` | no |
+| <a name="input_schedules"></a> [schedules](#input\_schedules) | List of schedules to be created. | <pre>map(object({<br>    name      = string<br>    time_zone = string<br>    teams     = list(string)<br>    # Todo: should be a list and dynamic?<br>    layers = map(object({<br>      name                         = string<br>      start                        = string<br>      rotation_virtual_start       = string<br>      rotation_turn_length_seconds = number<br>      users                        = list(string)<br>      restriction = object({<br>        type              = string<br>        start_time_of_day = string<br>        duration_seconds  = number<br>      })<br>    }))<br>  }))</pre> | `{}` | no |
+| <a name="input_teams"></a> [teams](#input\_teams) | List of teams to be created. | <pre>map(object({<br>    name        = string<br>    description = string<br>  }))</pre> | `{}` | no |
+| <a name="input_users"></a> [users](#input\_users) | List of users to be created. | <pre>map(object({<br>    name         = string<br>    email        = string<br>    job_title    = string<br>    role         = string<br>    time_zone    = string<br>    color        = string<br>    contact_type = string<br>    country_code = string<br>    address      = string<br>    label        = string<br><br>    teams = list(object({<br>      team_key = string<br>      role     = string<br>    }))<br><br>  }))</pre> | `{}` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_team_memberships"></a> [team\_memberships](#output\_team\_memberships) | PagerDuty Team Memberships |
+| <a name="output_teams"></a> [teams](#output\_teams) | PagerDuty Teams |
+| <a name="output_users"></a> [users](#output\_users) | PagerDuty Users |
