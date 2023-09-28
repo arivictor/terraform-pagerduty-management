@@ -56,72 +56,55 @@ resource "pagerduty_team_membership" "member" {
 }
 
 
-# resource "pagerduty_schedule" "schedule" {
-#   for_each = var.schedules ? var.schedules : {}
+resource "pagerduty_schedule" "schedule" {
+  for_each = var.schedules
 
-#   name      = each.value.name
-#   time_zone = each.value.time_zone
-#   teams = [
-#     for team in each.value.teams : pagerduty_team.team[team].id
-#   ]
+  name      = each.value.name
+  time_zone = each.value.time_zone
+  teams = [
+    for team in each.value.teams : pagerduty_team.team[team].id
+  ]
 
-#   dynamic "layer" {
-#     for_each = each.value.layers
-#     content {
-#       name                         = layer.value.layer.name
-#       start                        = layer.value.layer.start
-#       rotation_virtual_start       = layer.value.layer.rotation_virtual_start
-#       rotation_turn_length_seconds = layer.value.layer.rotation_turn_length_seconds
+  dynamic "layer" {
+    for_each = each.value.layers
+    content {
+      name                         = layer.value.name
+      start                        = layer.value.start
+      rotation_virtual_start       = layer.value.rotation_virtual_start
+      rotation_turn_length_seconds = layer.value.rotation_turn_length_seconds
 
-#       users = [
-#         for user_name in layer.value.users : pagerduty_user.user[user_name].id
-#       ]
+      users = [
+        for user_name in layer.value.users : pagerduty_user.user[user_name].id
+      ]
 
-#       restriction {
-#         type              = layer.value.restriction.type
-#         start_time_of_day = layer.value.restriction.start_time_of_day
-#         duration_seconds  = layer.value.restriction.duration_seconds
-#       }
-#     }
-#   }
+      restriction {
+        type              = layer.value.restriction.type
+        start_time_of_day = layer.value.restriction.start_time_of_day
+        duration_seconds  = layer.value.restriction.duration_seconds
+      }
+    }
+  }
+}
 
-#   layer {
-#     name                         = each.value.layer.name
-#     start                        = each.value.layer.start
-#     rotation_virtual_start       = each.value.layer.rotation_virtual_start
-#     rotation_turn_length_seconds = each.value.layer.rotation_turn_length_seconds
+resource "pagerduty_escalation_policy" "policy" {
+  for_each = var.escalation_policies
 
-#     users = [
-#       for user_name in each.value.layer.users : pagerduty_user.user[user_name].id
-#     ]
+  name      = each.value.name
+  num_loops = each.value.num_loops
+  teams     = [for t in each.value.teams : pagerduty_team.team[t].id]
 
-#     restriction {
-#       type              = each.value.layer.restriction.type
-#       start_time_of_day = each.value.layer.restriction.start_time_of_day
-#       duration_seconds  = each.value.layer.restriction.duration_seconds
-#     }
-#   }
-# }
+  dynamic "rule" {
+    for_each = each.value.rules
+    content {
+      escalation_delay_in_minutes = rule.value.escalation_delay_in_minutes
 
-# resource "pagerduty_escalation_policy" "policy" {
-#   for_each = var.escalation_policies ? var.escalation_policies : {}
-
-#   name      = each.value.name
-#   num_loops = each.value.num_loops
-#   teams     = [for t in each.value.teams : pagerduty_team.team[t].id]
-
-#   dynamic "rule" {
-#     for_each = each.value.rules
-#     content {
-#       escalation_delay_in_minutes = rule.value.escalation_delay_in_minutes
-
-#       dynamic "target" {
-#         for_each = rule.value.targets
-#         content {
-#           type = target.value.type
-#           id   = target.value.type == "user_reference" ? pagerduty_user.user[target.value.user_key].id : pagerduty_team.team[target.value.name].id
-#         }
-#       }
-#     }
-#   }
-# }
+      dynamic "target" {
+        for_each = rule.value.targets
+        content {
+          type = target.value.type
+          id   = target.value.type == "user_reference" ? pagerduty_user.user[target.value.user_key].id : pagerduty_team.team[target.value.name].id
+        }
+      }
+    }
+  }
+}
