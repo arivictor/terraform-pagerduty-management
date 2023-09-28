@@ -36,7 +36,6 @@ variable "schedules" {
     name      = string
     time_zone = string
     teams     = list(string)
-    # Todo: should be a list and dynamic?
     layers = map(object({
       name                         = string
       start                        = string
