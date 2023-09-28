@@ -13,11 +13,7 @@ footer-from: ""
 # see: https://terraform-docs.io/user-guide/configuration/sections
 sections:
   show:
-    - header
-    - inputs
-    - providers
-    - modules
-    - footer
+    - all
 
 # # see: https://terraform-docs.io/user-guide/configuration/content
 # content: |-
@@ -55,7 +51,7 @@ sections:
 # # see: https://terraform-docs.io/user-guide/configuration/output
 output:
   file: README.md
-  mode: inject
+  mode: replace
   template: |-
     <!-- BEGIN_TF_DOCS -->
     
